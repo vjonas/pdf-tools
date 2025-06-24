@@ -53,7 +53,7 @@ import { HttpClientModule } from '@angular/common/http';
     <div class="app-container">
       <!-- Toolbar -->
       <p-toolbar>
-        <div class="p-toolbar-group-start" style="">
+        <div class="p-toolbar-group-start">
           <p-button
             icon="pi pi-folder-open"
             label="Open PDF"
@@ -96,7 +96,7 @@ import { HttpClientModule } from '@angular/common/http';
           chooseLabel="Upload PDF"
           (onSelect)="onFileSelect($event)"
           [disabled]="pdfService.isLoading()"
-          class="p-button-outlined mr-2 self-start"
+          class="p-button-outlined mr-2  justify-self-start"
         >
         </p-fileUpload>
         }
@@ -137,9 +137,10 @@ import { HttpClientModule } from '@angular/common/http';
                     </p-button>
                     <p-button
                       icon="pi pi-trash"
+                      severity="danger"
                       size="small"
                       (click)="deletePage($index)"
-                      class="p-button-rounded p-button-text p-button-danger p-button-sm"
+                      class="p-button-rounded  p-button-text p-button-danger p-button-sm"
                     >
                     </p-button>
                   </div>
@@ -230,8 +231,8 @@ import { HttpClientModule } from '@angular/common/http';
           </div>
 
           @for (range of splitRanges; track $index) {
-          <div class="split-range-item">
-            <div class="p-inputgroup">
+          <div class="split-range-item ">
+            <div class="p-inputgroup gap-2">
               <span class="p-inputgroup-addon">Pages</span>
               <input
                 type="number"
@@ -250,7 +251,7 @@ import { HttpClientModule } from '@angular/common/http';
                 min="1"
                 [max]="pdfService.pages().length"
               />
-              <span class="p-inputgroup-addon">File:</span>
+              <span class="p-inputgroup-addon">Filename</span>
               <input
                 type="text"
                 pInputText
@@ -259,8 +260,9 @@ import { HttpClientModule } from '@angular/common/http';
               />
               <p-button
                 icon="pi pi-trash"
+                severity="danger"
                 (click)="removeSplitRange($index)"
-                class="p-button-danger"
+                class=" p-button-outlined p-button-rounded"
               >
               </p-button>
             </div>
@@ -279,9 +281,11 @@ import { HttpClientModule } from '@angular/common/http';
         <ng-template pTemplate="footer">
           <p-button
             label="Cancel"
+            severity="secondary"
+            text
             icon="pi pi-times"
             (click)="showSplitDialog = false"
-            class="p-button-text"
+            class="p-button-outlined"
           >
           </p-button>
           <p-button
@@ -303,133 +307,7 @@ import { HttpClientModule } from '@angular/common/http';
       <p-confirmDialog></p-confirmDialog>
     </div>
   `,
-  styles: [
-    `
-      :host ::ng-deep {
-        .p-toolbar {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-
-      .self-start {
-        justify-self: baseline;
-      }
-
-      .app-container {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .loading-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-        gap: 1rem;
-      }
-
-      .pages-container {
-        flex: 1;
-        overflow-y: auto;
-        padding: 1rem;
-      }
-
-      .pages-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1rem;
-      }
-
-      .page-card {
-        cursor: move;
-        transition: transform 0.2s;
-      }
-
-      .page-card:hover {
-        transform: translateY(-2px);
-      }
-
-      .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 1rem;
-        background-color: #f8f9fa;
-      }
-
-      .page-number {
-        font-weight: 600;
-      }
-
-      .page-actions {
-        display: flex;
-        gap: 0.25rem;
-      }
-
-      .page-content {
-        padding: 1rem;
-        display: flex;
-        justify-content: center;
-      }
-
-      .page-content canvas {
-        max-width: 100%;
-        height: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-      }
-
-      .empty-state {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .empty-content {
-        text-align: center;
-        color: #6c757d;
-      }
-
-      .split-dialog-content {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .split-range-item {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-
-      .p-inputgroup {
-        display: flex;
-        align-items: center;
-        width: 100%;
-      }
-
-      .p-inputgroup input {
-        flex: 1;
-      }
-
-      .save-location-section {
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        background-color: #f8f9fa;
-        border-radius: 6px;
-        border: 1px solid #dee2e6;
-      }
-
-      .save-location-section label {
-        color: #495057;
-        font-weight: 500;
-      }
-    `,
-  ],
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   pdfService = inject(PdfService);
