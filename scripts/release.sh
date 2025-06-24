@@ -115,14 +115,14 @@ create_and_push_tag() {
 show_menu() {
     local current_version=$1
 
-    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║                    PDF Organiser Release                    ║${NC}"
-    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
-    echo ""
-    echo -e "${BLUE}Current version: ${YELLOW}${current_version}${NC}"
-    echo ""
-    echo -e "${BLUE}Select the type of release:${NC}"
-    echo ""
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}" >&2
+    echo -e "${CYAN}║                    PDF Organiser Release                    ║${NC}" >&2
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}" >&2
+    echo "" >&2
+    echo -e "${BLUE}Current version: ${YELLOW}${current_version}${NC}" >&2
+    echo "" >&2
+    echo -e "${BLUE}Select the type of release:${NC}" >&2
+    echo "" >&2
 
     # Define menu options with descriptions
     local patch_version=$(calculate_next_version $current_version "patch")
@@ -138,30 +138,30 @@ show_menu() {
         "❌ Cancel"
     )
 
-    select opt in "${options[@]}"
+    select opt in "${options[@]}" >&2
     do
         case $REPLY in
             1)
-                echo -e "${GREEN}Selected: Patch/Bug Fix Release${NC}"
-                echo "patch"  # Return the bump type
+                echo -e "${GREEN}Selected: Patch/Bug Fix Release${NC}" >&2
+                echo "patch"  # Only this goes to stdout
                 break
                 ;;
             2)
-                echo -e "${GREEN}Selected: Feature/Minor Release${NC}"
-                echo "minor"  # Return the bump type
+                echo -e "${GREEN}Selected: Feature/Minor Release${NC}" >&2
+                echo "minor"  # Only this goes to stdout
                 break
                 ;;
             3)
-                echo -e "${GREEN}Selected: Major Release${NC}"
-                echo "major"  # Return the bump type
+                echo -e "${GREEN}Selected: Major Release${NC}" >&2
+                echo "major"  # Only this goes to stdout
                 break
                 ;;
             4)
-                echo -e "${YELLOW}Release cancelled.${NC}"
+                echo -e "${YELLOW}Release cancelled.${NC}" >&2
                 exit 0
                 ;;
             *)
-                echo -e "${RED}Invalid option. Please select 1-4.${NC}"
+                echo -e "${RED}Invalid option. Please select 1-4.${NC}" >&2
                 ;;
         esac
     done
