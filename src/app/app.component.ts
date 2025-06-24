@@ -4,6 +4,8 @@ import {
   OnInit,
   OnDestroy,
   AfterViewInit,
+  ChangeDetectorRef,
+  AfterViewChecked,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -53,7 +55,7 @@ import { HttpClientModule } from '@angular/common/http';
     <div class="app-container">
       <!-- Toolbar -->
       <p-toolbar>
-        <div class="p-toolbar-group-start">
+        <div class="p-toolbar-group-start flex gap-1">
           <p-button
             icon="pi pi-folder-open"
             label="Open PDF"
@@ -82,9 +84,11 @@ import { HttpClientModule } from '@angular/common/http';
           </p-button>
         </div>
 
-        <div class="p-toolbar-group-end">
+        <div class="p-toolbar-group-end justify-self-end">
           @if (pdfService.currentFileName()) {
-          <span class="font-medium">{{ pdfService.currentFileName() }}</span>
+          <span class="font-medium"
+            >file: {{ pdfService.currentFileName() }}</span
+          >
           @if (pdfService.hasChanges()) {
           <p-badge value="*" severity="warn" class="ml-2"></p-badge>
           } }
@@ -309,7 +313,9 @@ import { HttpClientModule } from '@angular/common/http';
   `,
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppComponent
+  implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked
+{
   pdfService = inject(PdfService);
   messageService = inject(MessageService);
   confirmationService = inject(ConfirmationService);
@@ -327,6 +333,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly SPLIT_SAVE_LOCATION_KEY =
     'pdf-organiser-split-save-location';
 
+  constructor(private cdRef: ChangeDetectorRef) {}
+
   ngOnInit(): void {
     // Setup canvas rendering after view init
     setTimeout(() => this.renderCanvases(), 100);
@@ -343,6 +351,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         window.electronAPI.signalAngularReady();
       }, 500);
     }
+  }
+
+  ngAfterViewChecked(): void {
+    this.renderCanvases();
+    console.log('ngAfterViewChecked');
   }
 
   ngOnDestroy(): void {
@@ -415,15 +428,17 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deletePage(index: number): void {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete this page?',
-      header: 'Confirm Delete',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.pdfService.removePage(index);
-        setTimeout(() => this.renderCanvases(), 100);
-      },
-    });
+    this.pdfService.removePage(index);
+    setTimeout(() => this.renderCanvases(), 100);
+    // this.confirmationService.confirm({
+    //   message: 'Are you sure you want to delete this page?',
+    //   header: 'Confirm Delete',
+    //   icon: 'pi pi-exclamation-triangle',
+    //   accept: () => {
+    //     this.pdfService.removePage(index);
+    //     setTimeout(() => this.renderCanvases(), 100);
+    //   },
+    // });
   }
 
   addSplitRange(): void {
