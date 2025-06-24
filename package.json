@@ -1,6 +1,6 @@
 {
   "name": "pdf-organiser",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A desktop PDF organizer tool built with Angular and Electron",
   "main": "electron/main.js",
   "homepage": "./",
