@@ -34,7 +34,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: pnpm ci
+        run: pnpm install
 
       - name: Build Angular application
         run: pnpm run build:prod
