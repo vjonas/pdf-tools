@@ -138,7 +138,7 @@ show_menu() {
         "❌ Cancel"
     )
 
-    select opt in "${options[@]}" >&2
+    select opt in "${options[@]}"
     do
         case $REPLY in
             1)
