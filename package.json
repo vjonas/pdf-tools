@@ -22,7 +22,8 @@
     "electron:win-x86": "npm run build:prod && electron-builder --win --ia32",
     "electron:win-arm64": "npm run build:prod && electron-builder --win --arm64",
     "electron:win-all": "npm run build:prod && electron-builder --win --x64 --ia32 --arm64",
-    "logs:open": "open ~/Library/Application\\ Support/PDF\\ Organiser/logs || explorer %APPDATA%/PDF\\ Organiser/logs || xdg-open ~/.config/PDF\\ Organiser/logs"
+    "logs:open": "open ~/Library/Application\\ Support/PDF\\ Organiser/logs || explorer %APPDATA%/PDF\\ Organiser/logs || xdg-open ~/.config/PDF\\ Organiser/logs",
+    "release": "./scripts/release.sh"
   },
   "private": true,
   "dependencies": {
