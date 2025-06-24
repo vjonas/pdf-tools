@@ -21,6 +21,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+          run_install: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,22 +34,22 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm ci
 
       - name: Build Angular application
-        run: npm run build:prod
+        run: pnpm run build:prod
 
       - name: Build Electron application (macOS)
         if: matrix.os == 'macos-latest'
-        run: npm run electron:dist -- --mac
+        run: pnpm run electron:dist -- --mac
 
       - name: Build Electron application (Windows)
         if: matrix.os == 'windows-latest'
-        run: npm run electron:dist -- --win --x64 --ia32 --arm64
+        run: pnpm run electron:dist -- --win --x64 --ia32 --arm64
 
       - name: Build Electron application (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: npm run electron:dist -- --linux
+        run: pnpm run electron:dist -- --linux
 
       - name: Upload macOS artifacts
         if: matrix.os == 'macos-latest'
