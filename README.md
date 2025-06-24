@@ -155,3 +155,6 @@ edit package json and run the git tag and push with version accordingly
 - edit package json version
 - git tag v1.0.4
 - git push origin v1.0.4
+
+## use the script
+run [release script](./scripts/release.sh) which will guide through releasing.
