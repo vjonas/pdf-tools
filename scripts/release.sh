@@ -83,11 +83,10 @@ calculate_next_version() {
 # Function to bump version
 bump_version() {
     local bump_type=$1
-    echo -e "${BLUE}Bumping ${bump_type} version...${NC}"
+    echo -e "${BLUE}Bumping ${bump_type} version...${NC}" >&2
 
     # Use npm version to bump and create git tag
-    local new_version=$(npm version $bump_type --no-git-tag-version)
-    echo $new_version
+    npm version $bump_type --no-git-tag-version
 }
 
 # Function to create git tag and push
