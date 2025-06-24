@@ -147,59 +147,11 @@ pdf-organiser/
 - `Ctrl/Cmd + S`: Save PDF file
 - `F12`: Toggle developer tools (development mode)
 
-## Troubleshooting
 
-### Dependencies Not Installing
 
-If npm install fails, try installing dependencies individually:
 
-```bash
-npm install --save pdf-lib pdfjs-dist primeng primeicons @angular/cdk
-npm install --save-dev concurrently wait-on
-```
-
-### PDF Not Loading
-
-1. Ensure the PDF file is not corrupted
-2. Check that the file path doesn't contain special characters
-3. Try a different PDF file to isolate the issue
-
-### Electron Not Starting
-
-1. Make sure all dependencies are installed
-2. Run `npm run build` before `npm run electron`
-3. Check the console for any error messages
-
-## Development Notes
-
-### Adding New Features
-
-1. **PDF Operations**: Extend the `PdfService` class in `src/app/services/pdf.service.ts`
-2. **UI Components**: Add new PrimeNG components to the main component
-3. **Electron Features**: Modify `electron/main.js` for new desktop functionality
-
-### Code Style
-
-- Uses Angular 19 with signals for reactive state management
-- Standalone components (no NgModules)
-- TypeScript strict mode enabled
-- SCSS for styling with PrimeNG theme
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This project is licensed under the ISC License.
-
-## Support
-
-For issues or questions:
-1. Check the troubleshooting section above
-2. Review the console logs for error messages  
-3. Create an issue with detailed reproduction steps
+# Release
+edit package json and run the git tag and push with version accordingly
+- edit package json version
+- git tag v1.0.4
+- git push origin v1.0.4
