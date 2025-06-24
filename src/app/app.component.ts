@@ -25,6 +25,7 @@ import { CardModule } from 'primeng/card';
 import { BadgeModule } from 'primeng/badge';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -45,13 +46,14 @@ import { InputIconModule } from 'primeng/inputicon';
     BadgeModule,
     IconFieldModule,
     InputIconModule,
+    HttpClientModule,
   ],
   providers: [MessageService, ConfirmationService],
   template: `
     <div class="app-container">
       <!-- Toolbar -->
       <p-toolbar>
-        <div class="p-toolbar-group-start">
+        <div class="p-toolbar-group-start" style="">
           <p-button
             icon="pi pi-folder-open"
             label="Open PDF"
@@ -60,18 +62,6 @@ import { InputIconModule } from 'primeng/inputicon';
             class="p-button-outlined mr-2"
           >
           </p-button>
-
-          @if (!isElectron) {
-          <p-fileUpload
-            mode="basic"
-            accept=".pdf"
-            chooseLabel="Upload PDF"
-            (onSelect)="onFileSelect($event)"
-            [disabled]="pdfService.isLoading()"
-            class="p-button-outlined mr-2"
-          >
-          </p-fileUpload>
-          }
 
           <p-button
             icon="pi pi-save"
@@ -99,6 +89,17 @@ import { InputIconModule } from 'primeng/inputicon';
           <p-badge value="*" severity="warn" class="ml-2"></p-badge>
           } }
         </div>
+        @if (!isElectron) {
+        <p-fileUpload
+          mode="basic"
+          accept=".pdf"
+          chooseLabel="Upload PDF"
+          (onSelect)="onFileSelect($event)"
+          [disabled]="pdfService.isLoading()"
+          class="p-button-outlined mr-2 self-start"
+        >
+        </p-fileUpload>
+        }
       </p-toolbar>
 
       <!-- Loading spinner -->
@@ -304,6 +305,17 @@ import { InputIconModule } from 'primeng/inputicon';
   `,
   styles: [
     `
+      :host ::ng-deep {
+        .p-toolbar {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .self-start {
+        justify-self: baseline;
+      }
+
       .app-container {
         height: 100vh;
         display: flex;

@@ -1,0 +1,6 @@
+:host ::ng-deep {
+  .p-toolbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
