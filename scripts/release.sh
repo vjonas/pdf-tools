@@ -143,15 +143,18 @@ show_menu() {
         case $REPLY in
             1)
                 echo -e "${GREEN}Selected: Patch/Bug Fix Release${NC}"
-                return 0  # patch
+                echo "patch"  # Return the bump type
+                break
                 ;;
             2)
                 echo -e "${GREEN}Selected: Feature/Minor Release${NC}"
-                return 1  # minor
+                echo "minor"  # Return the bump type
+                break
                 ;;
             3)
                 echo -e "${GREEN}Selected: Major Release${NC}"
-                return 2  # major
+                echo "major"  # Return the bump type
+                break
                 ;;
             4)
                 echo -e "${YELLOW}Release cancelled.${NC}"
@@ -183,17 +186,8 @@ main() {
     # Get current version
     local current_version=$(get_current_version)
 
-    # Show interactive menu
-    show_menu $current_version
-    local menu_result=$?
-
-    # Map menu result to bump type
-    local bump_type
-    case $menu_result in
-        0) bump_type="patch" ;;
-        1) bump_type="minor" ;;
-        2) bump_type="major" ;;
-    esac
+        # Show interactive menu
+    local bump_type=$(show_menu $current_version)
 
     echo ""
     echo -e "${YELLOW}About to create a ${bump_type} release from ${current_version}${NC}"
