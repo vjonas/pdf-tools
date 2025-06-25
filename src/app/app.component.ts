@@ -22,12 +22,14 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { DragDropModule } from 'primeng/dragdrop';
 import { CardModule } from 'primeng/card';
 import { BadgeModule } from 'primeng/badge';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { HttpClientModule } from '@angular/common/http';
+
+// Angular CDK Drag Drop imports
+import { CdkDrag, CdkDropList, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-root',
@@ -43,12 +45,14 @@ import { HttpClientModule } from '@angular/common/http';
     ConfirmDialogModule,
     DialogModule,
     InputTextModule,
-    DragDropModule,
     CardModule,
     BadgeModule,
     IconFieldModule,
     InputIconModule,
     HttpClientModule,
+    // Angular CDK Drag Drop
+    CdkDrag,
+    CdkDropList,
   ],
   providers: [MessageService, ConfirmationService],
   template: `
@@ -114,19 +118,49 @@ import { HttpClientModule } from '@angular/common/http';
       </div>
       }
 
-      <!-- PDF Pages Grid -->
+      <!-- PDF Pages Grid with CDK Drag Drop -->
       @if (pdfService.pages().length > 0 && !pdfService.isLoading()) {
       <div class="pages-container">
-        <div class="pages-grid">
+        <div 
+          class="pages-grid"
+          cdkDropList
+          [cdkDropListData]="pdfService.pages()"
+          (cdkDropListDropped)="onPageDrop($event)"
+          cdkDropListOrientation="mixed"
+        >
           @for (page of pdfService.pages(); track page.pageNumber) {
           <div
             class="page-card"
-            pDraggable="pages"
-            pDroppable="pages"
-            (onDrop)="onPageDrop($event, $index)"
-            (onDragStart)="draggedPageIndex = $index"
-            (onDragEnd)="draggedPageIndex = null"
+            cdkDrag
+            [cdkDragData]="{ page: page, index: $index }"
           >
+            <!-- Custom drag preview -->
+            <div class="page-drag-preview" *cdkDragPreview>
+              <p-card class="drag-preview-card">
+                <ng-template pTemplate="header">
+                  <div class="page-header">
+                    <span class="page-number">Page {{ $index + 1 }}</span>
+                  </div>
+                </ng-template>
+                <div class="page-content preview-content">
+                  <canvas
+                    [attr.width]="page.width * 0.5"
+                    [attr.height]="page.height * 0.5"
+                    #previewCanvas
+                  ></canvas>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Placeholder shown in the original position while dragging -->
+            <div class="page-placeholder" *cdkDragPlaceholder>
+              <div class="placeholder-content">
+                <i class="pi pi-arrows-alt placeholder-icon"></i>
+                <span class="placeholder-text">Drop page here</span>
+              </div>
+            </div>
+
+            <!-- Actual page card -->
             <p-card>
               <ng-template pTemplate="header">
                 <div class="page-header">
@@ -322,7 +356,6 @@ export class AppComponent
 
   isElectron = typeof window !== 'undefined' && !!window.electronAPI;
   showSplitDialog = false;
-  draggedPageIndex: number | null = null;
 
   splitRanges: { start: number; end: number; filename: string }[] = [
     { start: 1, end: 1, filename: 'part1.pdf' },
@@ -411,15 +444,21 @@ export class AppComponent
     }
   }
 
-  onPageDrop(event: any, targetIndex: number): void {
-    if (
-      this.draggedPageIndex !== null &&
-      this.draggedPageIndex !== targetIndex
-    ) {
-      this.pdfService.reorderPages(this.draggedPageIndex, targetIndex);
+  // Updated drag drop handler using CDK
+  onPageDrop(event: CdkDragDrop<any[]>): void {
+    if (event.previousIndex !== event.currentIndex) {
+      // Reorder pages in the service
+      this.pdfService.reorderPages(event.previousIndex, event.currentIndex);
+      
+      // Re-render canvases after reordering
       setTimeout(() => this.renderCanvases(), 100);
+      
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Page Moved',
+        detail: `Page moved from position ${event.previousIndex + 1} to ${event.currentIndex + 1}`,
+      });
     }
-    this.draggedPageIndex = null;
   }
 
   duplicatePage(index: number): void {
@@ -474,13 +513,32 @@ export class AppComponent
   private renderCanvases(): void {
     const pages = this.pdfService.pages();
     const canvasElements = document.querySelectorAll('.page-content canvas');
+    const previewCanvasElements = document.querySelectorAll('.preview-content canvas');
 
+    // Render main canvases
     canvasElements.forEach((canvas, index) => {
       if (pages[index] && canvas instanceof HTMLCanvasElement) {
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(pages[index].canvas, 0, 0);
+        }
+      }
+    });
+
+    // Render preview canvases (smaller versions for drag preview)
+    previewCanvasElements.forEach((canvas, index) => {
+      if (pages[index] && canvas instanceof HTMLCanvasElement) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          // Scale down the image for preview
+          ctx.drawImage(
+            pages[index].canvas, 
+            0, 0, 
+            canvas.width, 
+            canvas.height
+          );
         }
       }
     });
