@@ -13,6 +13,14 @@
   gap: 1rem;
   flex: 1; // Allow grid to grow and be scrollable
   transition: background-color 0.2s ease;
+
+  // Enhanced background when dragging
+  &.dragging-active {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.03), rgba(0, 123, 255, 0.08));
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin: -0.5rem;
+  }
 }
 
 // Adjust grid for wider containers (when detail view is hidden)
@@ -28,7 +36,7 @@
   border-radius: 8px;
   position: relative;
 
-  &:hover {
+  &:hover:not(.dragging) {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
@@ -41,9 +49,36 @@
     }
   }
 
+  // Enhanced styling when being dragged
+  &.dragging {
+    opacity: 0.7;
+    transform: scale(0.98);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    
+    :deep(.p-card) {
+      border: 2px solid var(--primary-color);
+      background: var(--primary-50);
+    }
+  }
+
+  // Enhanced styling for drag targets
+  &.drag-target {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(0, 123, 255, 0.3);
+    
+    :deep(.p-card) {
+      border: 2px dashed var(--primary-color);
+      background: var(--primary-25);
+    }
+  }
+
   :deep(.p-card) {
     height: 100%;
-    transition: border 0.2s ease;
+    transition: all 0.2s ease;
+
+    &.card-hover-disabled {
+      pointer-events: none;
+    }
 
     .p-card-body {
       padding: 0.5rem;
@@ -64,6 +99,43 @@
   border-bottom: 1px solid var(--surface-200);
 }
 
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drag-handle {
+  opacity: 0;
+  transition: all 0.2s ease;
+  cursor: grab;
+  padding: 0.25rem;
+  border-radius: 4px;
+  color: var(--text-color-secondary);
+  
+  &:hover {
+    background: var(--surface-200);
+    color: var(--primary-color);
+  }
+  
+  &:active {
+    cursor: grabbing;
+  }
+  
+  &.visible {
+    opacity: 1;
+  }
+  
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+// Show drag handle on card hover
+.thumbnail-card:hover .drag-handle {
+  opacity: 1;
+}
+
 .page-number {
   font-weight: 600;
   font-size: 0.875rem;
@@ -73,6 +145,12 @@
 .page-actions {
   display: flex;
   gap: 0.25rem;
+  transition: all 0.2s ease;
+
+  &.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
 
   :deep(.p-button) {
     width: 2rem;
@@ -89,12 +167,120 @@
   justify-content: center;
   align-items: center;
   min-height: 150px;
+  position: relative;
 
   canvas {
     max-width: 100%;
     height: auto;
     border: 1px solid var(--surface-300);
     border-radius: 4px;
+  }
+}
+
+// Reorder overlay for non-dragged items
+.reorder-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 123, 255, 0.1);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.reorder-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-align: center;
+  
+  i {
+    font-size: 1.5rem;
+    animation: spin 2s linear infinite;
+  }
+}
+
+// Drop indicators
+.drop-indicator {
+  grid-column: 1 / -1;
+  height: 4px;
+  margin: 0.5rem 0;
+  position: relative;
+  opacity: 0;
+  transition: all 0.3s ease;
+  
+  &.active {
+    opacity: 1;
+    transform: scaleY(1.5);
+  }
+  
+  &.final {
+    margin-top: 1rem;
+  }
+}
+
+.drop-line {
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+  border-radius: 2px;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    width: 8px;
+    height: 8px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
+  }
+  
+  &::before {
+    left: -4px;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+  
+  &::after {
+    right: -4px;
+    animation: pulse-dot 1.5s ease-in-out infinite 0.75s;
+  }
+}
+
+.drop-text {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--primary-color);
   }
 }
 
@@ -119,19 +305,20 @@
   }
 }
 
-/* Angular CDK Drag and Drop Enhancements */
+/* Enhanced Angular CDK Drag and Drop Styling */
 
 /* Drop list styling */
 .cdk-drop-list {
-  transition: background-color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .cdk-drop-list.cdk-drop-list-dragging {
-  background-color: rgba(0, 123, 255, 0.05);
-  border-radius: 8px;
+  .thumbnail-card:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
 }
 
-/* Draggable item styling */
+/* Enhanced draggable item styling */
 .cdk-drag {
   transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
@@ -144,123 +331,253 @@
   cursor: grabbing;
 }
 
-/* Drag preview styling */
+/* Enhanced drag preview styling */
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 8px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  transform: rotate(3deg);
-  opacity: 0.9;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25), 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: rotate(2deg);
+  opacity: 0.95;
   z-index: 1000;
   pointer-events: none;
+  animation: drag-preview-entrance 0.2s ease-out;
 }
 
 .drag-preview-card {
-  width: 180px;
-  transform: scale(0.95);
-  border: 2px solid var(--primary-color);
+  width: 220px;
   background: var(--surface-0);
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
+}
+
+.preview-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
+  color: white;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
   
-  .page-header {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
-    color: var(--primary-color-text);
+  i {
+    font-size: 1rem;
+    animation: drag-handle-wiggle 0.5s ease-in-out infinite alternate;
   }
 }
 
-.preview-content {
-  padding: 0.5rem;
+.preview-info {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.preview-thumbnail {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--surface-25);
   
   canvas {
-    border: 1px solid var(--primary-color);
+    border: 2px solid var(--primary-200);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 }
 
-/* Placeholder styling */
+/* Enhanced placeholder styling */
 .cdk-drag-placeholder {
   border: 2px dashed var(--primary-color);
-  background: var(--primary-50);
-  border-radius: 8px;
-  opacity: 0.6;
+  background: linear-gradient(135deg, var(--primary-25), var(--primary-50));
+  border-radius: 12px;
+  opacity: 0.8;
   min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
   position: relative;
-  animation: pulse 2s infinite;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, transparent, var(--primary-200), transparent);
+    z-index: -1;
+    animation: border-dance 2s linear infinite;
+  }
 }
 
 .placeholder-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   color: var(--primary-color);
   font-weight: 500;
+  text-align: center;
+  z-index: 1;
+}
+
+.placeholder-header {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.placeholder-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .placeholder-icon {
-  font-size: 2rem;
-  animation: bounce 1s infinite;
+  font-size: 2.5rem;
+  opacity: 0.7;
+  animation: placeholder-pulse 1.5s ease-in-out infinite;
+}
+
+.placeholder-animation {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.pulse-ring {
+  position: absolute;
+  border: 2px solid var(--primary-color);
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  animation: pulse-ring-animation 2s ease-out infinite;
+  
+  &.delay-1 {
+    animation-delay: 0.4s;
+  }
+  
+  &.delay-2 {
+    animation-delay: 0.8s;
+  }
 }
 
 .placeholder-text {
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.875rem;
+  opacity: 0.8;
+  animation: text-fade 2s ease-in-out infinite;
 }
 
-/* Animation for dragging */
+/* Animation for dragging state */
 .cdk-drag-animating {
   transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Drop list receiving items */
-.cdk-drop-list.cdk-drop-list-receiving {
-  background: var(--green-50);
-  border: 2px dashed var(--green-500);
-  border-radius: 8px;
-}
-
-/* Dragged item styling */
-.thumbnails-grid.cdk-drop-list-dragging .thumbnail-card:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-/* Hide other page actions during drag */
-.thumbnails-grid.cdk-drop-list-dragging .page-actions {
-  opacity: 0.3;
-  pointer-events: none;
-}
-
-/* Enhanced hover effects during drag */
-.thumbnails-grid.cdk-drop-list-dragging .thumbnail-card:not(.cdk-drag-placeholder):hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Custom keyframe animations */
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 var(--primary-200);
+/* Global dragging styles */
+:global(body.pdf-dragging) {
+  cursor: grabbing !important;
+  user-select: none;
+  
+  * {
+    cursor: grabbing !important;
   }
-  70% {
-    box-shadow: 0 0 0 10px transparent;
+}
+
+/* Enhanced keyframe animations */
+@keyframes drag-preview-entrance {
+  from {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(2deg);
+    opacity: 0.95;
+  }
+}
+
+@keyframes drag-handle-wiggle {
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes pulse-ring-animation {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
   }
   100% {
-    box-shadow: 0 0 0 0 transparent;
+    transform: scale(1.4);
+    opacity: 0;
   }
 }
 
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
+@keyframes placeholder-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
   }
-  40% {
-    transform: translateY(-5px);
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
   }
-  60% {
-    transform: translateY(-3px);
+}
+
+@keyframes border-dance {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+}
+
+@keyframes text-fade {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -269,14 +586,24 @@
   .thumbnails-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 0.75rem;
+    
+    &.dragging-active {
+      padding: 0.375rem;
+      margin: -0.375rem;
+    }
   }
   
   .drag-preview-card {
-    width: 140px;
+    width: 180px;
   }
   
   .cdk-drag-placeholder {
     min-height: 150px;
+  }
+  
+  .drop-text {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
   }
 }
 
@@ -290,6 +617,10 @@
   .placeholder-content {
     color: var(--text-color);
   }
+  
+  .drop-line {
+    background: var(--text-color);
+  }
 }
 
 /* Reduced motion support */
@@ -297,12 +628,29 @@
   .cdk-drag,
   .cdk-drag-animating,
   .thumbnail-card,
-  .placeholder-icon {
+  .drag-handle,
+  .page-actions,
+  .reorder-overlay,
+  .drop-indicator,
+  .pulse-ring,
+  .placeholder-icon,
+  .placeholder-text {
     transition: none !important;
     animation: none !important;
   }
   
   .cdk-drag-placeholder {
     animation: none;
+    
+    &::before {
+      animation: none;
+    }
+  }
+  
+  .drop-line {
+    &::before,
+    &::after {
+      animation: none;
+    }
   }
 }

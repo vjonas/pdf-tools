@@ -32,6 +32,9 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { HttpClientModule } from '@angular/common/http';
 
+// Angular CDK Drag Drop Module
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -52,6 +55,7 @@ import { HttpClientModule } from '@angular/common/http';
     InputIconModule,
     InputSwitchModule,
     HttpClientModule,
+    DragDropModule,
     PdfThumbnailViewComponent,
     PdfDetailViewComponent,
   ],
