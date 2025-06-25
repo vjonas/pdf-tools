@@ -25,7 +25,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { DragDropModule } from 'primeng/dragdrop';
 import { CardModule } from 'primeng/card';
 import { BadgeModule } from 'primeng/badge';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -47,7 +46,6 @@ import { HttpClientModule } from '@angular/common/http';
     ConfirmDialogModule,
     DialogModule,
     InputTextModule,
-    DragDropModule,
     CardModule,
     BadgeModule,
     IconFieldModule,
