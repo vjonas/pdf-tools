@@ -14,6 +14,13 @@
   flex: 1; // Allow grid to grow and be scrollable
 }
 
+// Adjust grid for wider containers (when detail view is hidden)
+@media (min-width: 1025px) {
+  :host-context(.thumbnails-only) .thumbnails-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
 .thumbnail-card {
   cursor: pointer;
   transition: all 0.2s ease;

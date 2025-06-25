@@ -22,6 +22,15 @@
                 [disabled]="pdfService.pages().length === 0"
                 class="p-button-outlined mr-2">
       </p-button>
+
+      <div class="preview-toggle mr-2 align-middle items-start">
+        <label for="preview-switch"
+               class="preview-toggle-label">Preview</label>
+        <p-inputSwitch id="preview-switch"
+                       [(ngModel)]="showDetailView"
+                       [disabled]="pdfService.pages().length === 0">
+        </p-inputSwitch>
+      </div>
     </div>
 
     <div class="p-toolbar-group-end justify-self-end">
@@ -54,7 +63,8 @@
 
   <!-- PDF Pages Layout - Thumbnails + Detail View -->
   @if (pdfService.pages().length > 0 && !pdfService.isLoading()) {
-  <div class="pdf-workspace">
+  <div class="pdf-workspace"
+       [class.thumbnails-only]="!showDetailView()">
     <!-- Thumbnails Section -->
     <div class="thumbnails-section">
       <app-pdf-thumbnail-view [pages]="pdfService.pages()"
@@ -68,11 +78,14 @@
     </div>
 
     <!-- Detail View Section -->
+    @if (showDetailView()) {
     <div class="detail-section py-4">
       <app-pdf-detail-view [selectedPage]="selectedPage"
-                           [selectedPageIndex]="selectedPageIndex()">
+                           [selectedPageIndex]="selectedPageIndex()"
+                           (closeDetailView)="showDetailView.set(false)">
       </app-pdf-detail-view>
     </div>
+    }
   </div>
   }
 

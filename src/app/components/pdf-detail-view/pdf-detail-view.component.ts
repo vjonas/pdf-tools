@@ -33,7 +33,7 @@ import { ToolbarModule } from 'primeng/toolbar';
                 Page {{ (selectedPageIndex() ?? 0) + 1 }} - Detail View
               </span>
             </div>
-            <div class="p-toolbar-group-end">
+            <div class="p-toolbar-group-end flex items-center">
               <p-button
                 icon="pi pi-search-plus"
                 (click)="zoomIn()"
@@ -55,6 +55,14 @@ import { ToolbarModule } from 'primeng/toolbar';
                 icon="pi pi-refresh"
                 (click)="resetZoom()"
                 class="p-button-rounded p-button-text p-button-sm"
+              >
+              </p-button>
+              <p-button
+                text
+                icon="pi pi-times"
+                (click)="closeDetailView.emit()"
+                class="p-button-rounded p-button-text p-button-sm flex justify-items-end justify-end w-full "
+                pTooltip="Close detail view"
               >
               </p-button>
             </div>
@@ -96,6 +104,7 @@ export class PdfDetailViewComponent
 {
   @ViewChild('detailCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
+  closeDetailView = output<void>();
 
   // Inputs
   selectedPage = input<PdfPageInfo | null>(null);

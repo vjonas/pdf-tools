@@ -30,6 +30,7 @@ import { CardModule } from 'primeng/card';
 import { BadgeModule } from 'primeng/badge';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { InputSwitchModule } from 'primeng/inputswitch';
 import { HttpClientModule } from '@angular/common/http';
 
 @Component({
@@ -51,6 +52,7 @@ import { HttpClientModule } from '@angular/common/http';
     BadgeModule,
     IconFieldModule,
     InputIconModule,
+    InputSwitchModule,
     HttpClientModule,
     PdfThumbnailViewComponent,
     PdfDetailViewComponent,
@@ -69,6 +71,7 @@ export class AppComponent
   isElectron = typeof window !== 'undefined' && !!window.electronAPI;
   showSplitDialog = false;
   selectedPageIndex = signal<number | null>(null);
+  showDetailView = signal<boolean>(true);
 
   splitRanges: { start: number; end: number; filename: string }[] = [
     { start: 1, end: 1, filename: 'part1.pdf' },
@@ -162,6 +165,7 @@ export class AppComponent
 
   onPageSelected(index: number): void {
     this.selectedPageIndex.set(index);
+    this.showDetailView.set(true);
   }
 
   onPageReordered(event: { fromIndex: number; toIndex: number }): void {
