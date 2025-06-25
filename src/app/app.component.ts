@@ -6,10 +6,13 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   AfterViewChecked,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PdfService } from './services/pdf.service';
+import { PdfThumbnailViewComponent } from './components/pdf-thumbnail-view/pdf-thumbnail-view.component';
+import { PdfDetailViewComponent } from './components/pdf-detail-view/pdf-detail-view.component';
 
 // PrimeNG imports
 import { ToolbarModule } from 'primeng/toolbar';
@@ -49,6 +52,8 @@ import { HttpClientModule } from '@angular/common/http';
     IconFieldModule,
     InputIconModule,
     HttpClientModule,
+    PdfThumbnailViewComponent,
+    PdfDetailViewComponent,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './app.component.html',
@@ -63,7 +68,7 @@ export class AppComponent
 
   isElectron = typeof window !== 'undefined' && !!window.electronAPI;
   showSplitDialog = false;
-  draggedPageIndex: number | null = null;
+  selectedPageIndex = signal<number | null>(null);
 
   splitRanges: { start: number; end: number; filename: string }[] = [
     { start: 1, end: 1, filename: 'part1.pdf' },
@@ -77,14 +82,11 @@ export class AppComponent
   constructor(private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    // Setup canvas rendering after view init
-    setTimeout(() => this.renderCanvases(), 100);
-
     // Load saved split location
     this.loadSplitSaveLocation();
   }
+
   ngAfterViewInit(): void {
-    this.renderCanvases();
     // Signal to Electron that Angular is ready
     if (this.isElectron && window.electronAPI) {
       // Wait a bit for Angular to fully initialize
@@ -95,8 +97,12 @@ export class AppComponent
   }
 
   ngAfterViewChecked(): void {
-    this.renderCanvases();
-    console.log('ngAfterViewChecked');
+    // No longer needed as canvas rendering is handled by child components
+  }
+
+  get selectedPage() {
+    const index = this.selectedPageIndex();
+    return index !== null ? this.pdfService.pages()[index] : null;
   }
 
   ngOnDestroy(): void {
@@ -109,7 +115,8 @@ export class AppComponent
   async openPdf(): Promise<void> {
     try {
       await this.pdfService.openPdf();
-      setTimeout(() => this.renderCanvases(), 100);
+      // Reset selection when loading a new PDF
+      this.selectedPageIndex.set(null);
     } catch (error) {
       this.messageService.add({
         severity: 'error',
@@ -124,7 +131,8 @@ export class AppComponent
     if (file) {
       try {
         await this.pdfService.loadPdfFromFile(file);
-        setTimeout(() => this.renderCanvases(), 100);
+        // Reset selection when loading a new PDF
+        this.selectedPageIndex.set(null);
       } catch (error) {
         this.messageService.add({
           severity: 'error',
@@ -152,34 +160,59 @@ export class AppComponent
     }
   }
 
-  onPageDrop(event: any, targetIndex: number): void {
-    if (
-      this.draggedPageIndex !== null &&
-      this.draggedPageIndex !== targetIndex
-    ) {
-      this.pdfService.reorderPages(this.draggedPageIndex, targetIndex);
-      setTimeout(() => this.renderCanvases(), 100);
+  onPageSelected(index: number): void {
+    this.selectedPageIndex.set(index);
+  }
+
+  onPageReordered(event: { fromIndex: number; toIndex: number }): void {
+    this.pdfService.reorderPages(event.fromIndex, event.toIndex);
+    // Update selected page index if it was moved
+    const currentSelected = this.selectedPageIndex();
+    if (currentSelected !== null) {
+      if (currentSelected === event.fromIndex) {
+        this.selectedPageIndex.set(event.toIndex);
+      } else if (
+        currentSelected > event.fromIndex &&
+        currentSelected <= event.toIndex
+      ) {
+        this.selectedPageIndex.set(currentSelected - 1);
+      } else if (
+        currentSelected < event.fromIndex &&
+        currentSelected >= event.toIndex
+      ) {
+        this.selectedPageIndex.set(currentSelected + 1);
+      }
     }
-    this.draggedPageIndex = null;
   }
 
-  duplicatePage(index: number): void {
+  onPageDuplicated(index: number): void {
     this.pdfService.duplicatePage(index);
-    setTimeout(() => this.renderCanvases(), 100);
+    // Update selected index if needed
+    const currentSelected = this.selectedPageIndex();
+    if (currentSelected !== null && currentSelected >= index) {
+      this.selectedPageIndex.set(currentSelected + 1);
+    }
   }
 
-  deletePage(index: number): void {
+  onPageDeleted(index: number): void {
     this.pdfService.removePage(index);
-    setTimeout(() => this.renderCanvases(), 100);
-    // this.confirmationService.confirm({
-    //   message: 'Are you sure you want to delete this page?',
-    //   header: 'Confirm Delete',
-    //   icon: 'pi pi-exclamation-triangle',
-    //   accept: () => {
-    //     this.pdfService.removePage(index);
-    //     setTimeout(() => this.renderCanvases(), 100);
-    //   },
-    // });
+    // Update selected index if needed
+    const currentSelected = this.selectedPageIndex();
+    if (currentSelected !== null) {
+      if (currentSelected === index) {
+        // If the deleted page was selected, select the next page or the last one
+        const newPagesLength = this.pdfService.pages().length;
+        if (newPagesLength === 0) {
+          this.selectedPageIndex.set(null);
+        } else if (index >= newPagesLength) {
+          this.selectedPageIndex.set(newPagesLength - 1);
+        } else {
+          this.selectedPageIndex.set(index);
+        }
+      } else if (currentSelected > index) {
+        this.selectedPageIndex.set(currentSelected - 1);
+      }
+    }
   }
 
   addSplitRange(): void {
@@ -210,21 +243,6 @@ export class AppComponent
         detail: 'Failed to split PDF',
       });
     }
-  }
-
-  private renderCanvases(): void {
-    const pages = this.pdfService.pages();
-    const canvasElements = document.querySelectorAll('.page-content canvas');
-
-    canvasElements.forEach((canvas, index) => {
-      if (pages[index] && canvas instanceof HTMLCanvasElement) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(pages[index].canvas, 0, 0);
-        }
-      }
-    });
   }
 
   private loadSplitSaveLocation(): void {

@@ -52,45 +52,26 @@
   </div>
   }
 
-  <!-- PDF Pages Grid -->
+  <!-- PDF Pages Layout - Thumbnails + Detail View -->
   @if (pdfService.pages().length > 0 && !pdfService.isLoading()) {
-  <div class="pages-container">
-    <div class="pages-grid">
-      @for (page of pdfService.pages(); track page.pageNumber) {
-      <div class="page-card"
-           pDraggable="pages"
-           pDroppable="pages"
-           (onDrop)="onPageDrop($event, $index)"
-           (onDragStart)="draggedPageIndex = $index"
-           (onDragEnd)="draggedPageIndex = null">
-        <p-card>
-          <ng-template pTemplate="header">
-            <div class="page-header">
-              <span class="page-number">Page {{ $index + 1 }}</span>
-              <div class="page-actions">
-                <p-button icon="pi pi-copy"
-                          size="small"
-                          (click)="duplicatePage($index)"
-                          class="p-button-rounded p-button-text p-button-sm">
-                </p-button>
-                <p-button icon="pi pi-trash"
-                          severity="danger"
-                          size="small"
-                          (click)="deletePage($index)"
-                          class="p-button-rounded  p-button-text p-button-danger p-button-sm">
-                </p-button>
-              </div>
-            </div>
-          </ng-template>
+  <div class="pdf-workspace">
+    <!-- Thumbnails Section -->
+    <div class="thumbnails-section">
+      <app-pdf-thumbnail-view [pages]="pdfService.pages()"
+                              class="overflow-hidden"
+                              [selectedPageIndex]="selectedPageIndex()"
+                              (pageSelected)="onPageSelected($event)"
+                              (pageDuplicated)="onPageDuplicated($event)"
+                              (pageDeleted)="onPageDeleted($event)"
+                              (pageReordered)="onPageReordered($event)">
+      </app-pdf-thumbnail-view>
+    </div>
 
-          <div class="page-content">
-            <canvas [attr.width]="page.width"
-                    [attr.height]="page.height"
-                    #canvas></canvas>
-          </div>
-        </p-card>
-      </div>
-      }
+    <!-- Detail View Section -->
+    <div class="detail-section py-4">
+      <app-pdf-detail-view [selectedPage]="selectedPage"
+                           [selectedPageIndex]="selectedPageIndex()">
+      </app-pdf-detail-view>
     </div>
   </div>
   }
