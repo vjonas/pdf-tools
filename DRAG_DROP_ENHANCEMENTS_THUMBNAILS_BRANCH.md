@@ -100,11 +100,11 @@ npm install @angular/cdk  # Already installed in this branch
 ```scss
 // Uses CSS custom properties for theme consistency
 .drag-preview-card {
-  border: 2px solid var(--primary-color);
+  border: 2px solid var(--p-primary-600);
   background: var(--surface-0);
   
   .page-header {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
+    background: linear-gradient(135deg, var(--p-primary-600), var(--primary-600));
     color: var(--primary-color-text);
   }
 }
