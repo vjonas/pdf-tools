@@ -160,16 +160,20 @@
   transform: scale(0.95);
   border: 2px solid var(--primary-color);
   background: var(--surface-0);
-  
+
   .page-header {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--primary-600)
+    );
     color: var(--primary-color-text);
   }
 }
 
 .preview-content {
   padding: 0.5rem;
-  
+
   canvas {
     border: 1px solid var(--primary-color);
   }
@@ -177,7 +181,7 @@
 
 /* Placeholder styling */
 .cdk-drag-placeholder {
-  border: 2px dashed var(--primary-color);
+  // border: 3px dotted var(--primary-color);
   background: var(--primary-50);
   border-radius: 8px;
   opacity: 0.6;
@@ -188,6 +192,24 @@
   transition: all 0.3s ease;
   position: relative;
   animation: pulse 2s infinite;
+  // background-color: red;
+  // margin: 0.5rem;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  transition: all 0.5s ease;
+  &::before {
+    content: "";
+    position: absolute;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px dashed var(--p-primary-600);
+    border-radius: 8px;
+    // background: green;
+    // z-index: 2;
+  }
 }
 
 .placeholder-content {
@@ -223,7 +245,8 @@
 }
 
 /* Dragged item styling */
-.thumbnails-grid.cdk-drop-list-dragging .thumbnail-card:not(.cdk-drag-placeholder) {
+.thumbnails-grid.cdk-drop-list-dragging
+  .thumbnail-card:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -234,7 +257,8 @@
 }
 
 /* Enhanced hover effects during drag */
-.thumbnails-grid.cdk-drop-list-dragging .thumbnail-card:not(.cdk-drag-placeholder):hover {
+.thumbnails-grid.cdk-drop-list-dragging
+  .thumbnail-card:not(.cdk-drag-placeholder):hover {
   transform: translateY(-4px) scale(1.02);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
@@ -253,7 +277,11 @@
 }
 
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
@@ -270,11 +298,11 @@
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 0.75rem;
   }
-  
+
   .drag-preview-card {
     width: 140px;
   }
-  
+
   .cdk-drag-placeholder {
     min-height: 150px;
   }
@@ -286,7 +314,7 @@
     border-color: var(--text-color);
     background: var(--surface-100);
   }
-  
+
   .placeholder-content {
     color: var(--text-color);
   }
@@ -301,7 +329,7 @@
     transition: none !important;
     animation: none !important;
   }
-  
+
   .cdk-drag-placeholder {
     animation: none;
   }
