@@ -3,6 +3,7 @@
   "version": "1.4.0",
   "description": "A desktop PDF organizer tool built with Angular and Electron",
   "main": "electron/main.js",
+  "author": "Kreadiv",
   "homepage": "./",
   "scripts": {
     "ng": "ng",
@@ -15,15 +16,17 @@
     "electron:prod": "electron .",
     "electron:dev": "concurrently \"npm run start\" \"wait-on http://localhost:4200 && NODE_ENV=development electron . --dev\"",
     "electron:serve": "ng serve & wait-on http://localhost:4200 && NODE_ENV=development electron . --dev",
-    "electron:pack": "npm run build:prod && electron-builder --mac --win",
-    "electron:dist": "npm run build:prod && electron-builder --publish=never",
+    "electron:pack": "npm run build:prod && electron-builder --config electron-builder-config.js --mac --win",
+    "electron:dist": "npm run build:prod && electron-builder --config electron-builder-config.js --publish=never",
+    "electron:dist:local": "npm run build:prod && electron-builder --config electron-builder-config.js --publish=never",
     "electron:debug": "npm run build:prod && electron . --debug",
-    "electron:win-x64": "npm run build:prod && electron-builder --win --x64",
-    "electron:win-x86": "npm run build:prod && electron-builder --win --ia32",
-    "electron:win-arm64": "npm run build:prod && electron-builder --win --arm64",
-    "electron:win-all": "npm run build:prod && electron-builder --win --x64 --ia32 --arm64",
+    "electron:win-x64": "npm run build:prod && electron-builder --config electron-builder-config.js --win --x64",
+    "electron:win-x86": "npm run build:prod && electron-builder --config electron-builder-config.js --win --ia32",
+    "electron:win-arm64": "npm run build:prod && electron-builder --config electron-builder-config.js --win --arm64",
+    "electron:win-all": "npm run build:prod && electron-builder --config electron-builder-config.js --win --x64 --ia32 --arm64",
     "logs:open": "open ~/Library/Application\\ Support/PDF\\ Organiser/logs || explorer %APPDATA%/PDF\\ Organiser/logs || xdg-open ~/.config/PDF\\ Organiser/logs",
-    "release": "./scripts/release.sh"
+    "release": "./scripts/release.sh",
+    "debug:release:sign": "DEBUG=electron-builder,electron-osx-sign* pnpm run electron:dist:local -- --mac"
   },
   "private": true,
   "dependencies": {
@@ -66,78 +69,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.6.2",
     "wait-on": "^8.0.0"
-  },
-  "build": {
-    "appId": "com.pdforganiser.app",
-    "productName": "PDF Organiser",
-    "directories": {
-      "output": "dist-electron"
-    },
-    "files": [
-      "dist/**/*",
-      "electron/**/*",
-      "node_modules/**/*",
-      "public/**/*",
-      "public/pdf-worker/pdf.worker.min.js"
-    ],
-    "asarUnpack": [
-      "public/**/*",
-      "public/pdf-worker/pdf.worker.min.js"
-    ],
-    "fileAssociations": [
-      {
-        "ext": "pdf",
-        "name": "PDF Document",
-        "description": "Portable Document Format",
-        "role": "Viewer"
-      }
-    ],
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "ia32",
-            "arm64"
-          ]
-        }
-      ],
-      "icon": "assets/icon.png",
-      "fileAssociations": [
-        {
-          "ext": "pdf",
-          "name": "PDF Document",
-          "description": "Portable Document Format",
-          "icon": "assets/icon.png",
-          "role": "Viewer"
-        }
-      ]
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.png",
-      "fileAssociations": [
-        {
-          "ext": "pdf",
-          "name": "PDF Document",
-          "description": "Portable Document Format",
-          "icon": "assets/icon.png",
-          "role": "Viewer"
-        }
-      ]
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "assets/icon.png",
-      "fileAssociations": [
-        {
-          "ext": "pdf",
-          "name": "PDF Document",
-          "description": "Portable Document Format",
-          "mimeType": "application/pdf"
-        }
-      ]
-    }
   }
 }
