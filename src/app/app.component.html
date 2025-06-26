@@ -79,7 +79,7 @@
 
     <!-- Detail View Section -->
     @if (showDetailView()) {
-    <div class="detail-section py-4">
+    <div class="detail-section py-4 pr-4">
       <app-pdf-detail-view [selectedPage]="selectedPage"
                            [selectedPageIndex]="selectedPageIndex()"
                            (closeDetailView)="showDetailView.set(false)">

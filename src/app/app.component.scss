@@ -2,6 +2,9 @@
   .p-toolbar {
     display: grid;
     grid-template-columns: auto 1fr;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom: 0 !important;
   }
 }
 
