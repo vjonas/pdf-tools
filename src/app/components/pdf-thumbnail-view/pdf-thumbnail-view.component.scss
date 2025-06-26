@@ -110,11 +110,12 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--surface-400);
+    // background: var(--surface-400);
     border-radius: 4px;
 
     &:hover {
-      background: var(--surface-500);
+      // background: var(--surface-500);
+      cursor: pointer;
     }
   }
 }
