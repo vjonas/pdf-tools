@@ -1,11 +1,13 @@
 const { getNotarizeConfig } = require("./build/notarize-config");
-console.log(getNotarizeConfig());
 
 module.exports = {
   appId: "com.pdforganiser.app",
   productName: "PDF Organiser",
   directories: {
     output: "dist-electron",
+  },
+  packagerConfig: {
+    osxSign: {}, // object must exist even if empty
   },
   files: [
     "dist/**/*",
@@ -53,8 +55,7 @@ module.exports = {
     gatekeeperAssess: false,
     entitlements: "build/entitlements.mac.plist",
     entitlementsInherit: "build/entitlements.mac.plist",
-    // notarize: getNotarizeConfig(),
-    notarize: true,
+    notarize: getNotarizeConfig(),
     fileAssociations: [
       {
         ext: "pdf",

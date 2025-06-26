@@ -10,11 +10,7 @@ module.exports = {
     // Only enable notarization if credentials are available
     if (appleId && applePassword) {
       console.log("🍎 Apple ID credentials found - enabling notarization");
-      return {
-        teamId: teamId,
-        appleId: appleId,
-        appleIdPassword: applePassword,
-      };
+      return true;
     } else {
       console.log("⚠️  Apple ID credentials not found - skipping notarization");
       console.log(
