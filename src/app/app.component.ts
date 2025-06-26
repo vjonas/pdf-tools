@@ -69,7 +69,7 @@ export class AppComponent
   isElectron = typeof window !== 'undefined' && !!window.electronAPI;
   showSplitDialog = false;
   selectedPageIndex = signal<number | null>(null);
-  showDetailView = signal<boolean>(true);
+  showDetailView = signal<boolean>(false);
 
   splitRanges: { start: number; end: number; filename: string }[] = [
     { start: 1, end: 1, filename: 'part1.pdf' },
