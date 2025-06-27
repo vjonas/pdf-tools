@@ -48,12 +48,25 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: pnpm run electron:dist -- --mac
 
+      - name: Install SSL.com CodeSignTool (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          curl -o CodeSignTool.zip https://www.ssl.com/download/codesigntool-for-windows/
+          Expand-Archive -Path CodeSignTool.zip -DestinationPath .
+          echo "$PWD" >> $GITHUB_PATH
+
       - name: Build Electron application (Windows)
         if: matrix.os == 'windows-latest'
         env:
+          # SSL.com eSigner (Recommended for Kreadiv BV)
+          SSL_COM_USERNAME: ${{ secrets.SSL_COM_USERNAME }}
+          SSL_COM_PASSWORD: ${{ secrets.SSL_COM_PASSWORD }}
+          SSL_COM_TOTP_SECRET: ${{ secrets.SSL_COM_TOTP_SECRET }}
+          SSL_COM_CREDENTIAL_ID: ${{ secrets.SSL_COM_CREDENTIAL_ID }}
+          # Traditional certificates (fallback)
           WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
-          # For Azure Trusted Signing (alternative to traditional certificates)
+          # Azure Trusted Signing (alternative)
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

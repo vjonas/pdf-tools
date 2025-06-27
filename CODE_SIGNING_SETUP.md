@@ -82,7 +82,23 @@ Popular certificate providers include:
 
 2. **Configure Environment Variables** (see GitHub Secrets section below)
 
-### Option 2: Azure Trusted Signing (Recommended)
+### Option 2: SSL.com eSigner (Recommended for Kreadiv BV)
+
+[SSL.com eSigner](https://www.ssl.com/certificates/code-signing/buy/) is a cloud-based code signing service perfect for your Belgian company.
+
+**Benefits for Kreadiv BV**:
+- **Available in Belgium** - No geographic restrictions
+- **Cloud-based signing** - Perfect for CI/CD and local development
+- **No hardware tokens** - Everything happens in the cloud
+- **EV certificate included** - Eliminates SmartScreen warnings
+- **Team-friendly** - Multiple developers can use the same credentials
+
+**What to Purchase**:
+- EV Code Signing Certificate with eSigner service
+- Company: **Kreadiv BV** (Belgium)
+- Price: ~$249-399/year
+
+### Option 3: Azure Trusted Signing
 
 [Azure Trusted Signing](https://learn.microsoft.com/en-us/azure/trusted-signing/) is Microsoft's modern alternative to traditional certificates.
 
@@ -113,6 +129,28 @@ Popular certificate providers include:
    - Create a certificate profile
    - Note your endpoint URL and account details
 
+#### Setup Steps for SSL.com eSigner:
+
+1. **Purchase SSL.com EV Certificate with eSigner**
+   - Go to [SSL.com Code Signing](https://www.ssl.com/certificates/code-signing/buy/)
+   - Select "EV Code Signing Certificate"
+   - Choose "eSigner Cloud Signing Service"
+   - Complete business verification for Kreadiv BV
+
+2. **Set up eSigner Account**
+   - SSL.com will create your eSigner account
+   - You'll receive login credentials
+   - Set up two-factor authentication (2FA)
+
+3. **Install CodeSignTool** (for local development)
+   - Download from [SSL.com CodeSignTool](https://www.ssl.com/download/codesigntool-for-windows/)
+   - Extract and add to your PATH
+   - Test with: `CodeSignTool -version`
+
+4. **Configure Credentials**
+   - Use your eSigner username/password
+   - Optionally set up TOTP secret for automated 2FA
+
 ## GitHub Repository Secrets Setup
 
 ### Add the following secrets to your GitHub repository:
@@ -128,6 +166,15 @@ Popular certificate providers include:
 | `APPLE_ID`                    | Your Apple ID email             | `developer@yourcompany.com`        |
 | `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password           | `abcd-efgh-ijkl-mnop`              |
 | `APPLE_TEAM_ID`               | Your Apple Developer Team ID    | `ABCD123456`                       |
+
+### Windows Secrets (SSL.com eSigner - Recommended for Kreadiv BV):
+
+| Secret Name             | Description                          | Example Value             |
+| ----------------------- | ------------------------------------ | ------------------------- |
+| `SSL_COM_USERNAME`      | Your SSL.com eSigner username        | `kreadiv@example.com`     |
+| `SSL_COM_PASSWORD`      | Your SSL.com eSigner password        | `your-esigner-password`   |
+| `SSL_COM_TOTP_SECRET`   | TOTP secret for 2FA (optional)       | `JBSWY3DPEHPK3PXP`        |
+| `SSL_COM_CREDENTIAL_ID` | Certificate credential ID (optional) | `12345678-1234-1234-1234` |
 
 ### Windows Secrets (Traditional Certificate):
 
@@ -162,7 +209,16 @@ Popular certificate providers include:
    pnpm run electron:dist -- --mac
    ```
 
-2. **Windows Local Build**:
+2. **Windows Local Build (SSL.com eSigner)**:
+   ```bash
+   # For SSL.com eSigner (Recommended for Kreadiv BV)
+   set SSL_COM_USERNAME=your-esigner-username
+   set SSL_COM_PASSWORD=your-esigner-password
+   
+   pnpm run electron:dist -- --win
+   ```
+
+3. **Windows Local Build (Traditional Certificate)**:
    ```bash
    set WIN_CSC_LINK=path\to\your\certificate.p12
    set WIN_CSC_KEY_PASSWORD=your-password
