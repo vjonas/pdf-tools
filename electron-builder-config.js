@@ -6,9 +6,7 @@ module.exports = {
   directories: {
     output: "dist-electron",
   },
-  packagerConfig: {
-    osxSign: {}, // object must exist even if empty
-  },
+
   files: [
     "dist/**/*",
     "electron/**/*",
